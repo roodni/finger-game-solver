@@ -13,7 +13,7 @@ p_2 p1_2 np2_2 ne1_2 ne2_2
 */
 
 void outTuple(std::tuple<int, int, int, int, int> tp) {
-    std::cerr
+    std::clog
         << std::get<0>(tp)
         << std::get<1>(tp)
         << std::get<2>(tp)
@@ -27,18 +27,18 @@ bool check() {
 
     std::cin >> p >> p1 >> p2 >> e1 >> e2;
     GameState state(p, p1, p2, e1, e2);
-    std::cerr << "State: ";
+    std::clog << "State: ";
     outTuple(state.makeTuple());
 
     // 遷移先の列挙
     state.addTransSet(nexts);
-    std::cerr << "[Trans]" << std::endl;
+    std::clog << "[Trans]" << std::endl;
     for (auto it = nexts.begin(); it != nexts.end(); it++) {
         outTuple(it->makeTuple());
     }
 
     // テストケースと遷移先が合致するか検査
-    // std::cerr << "[Tests]" << std::endl;
+    // std::clog << "[Tests]" << std::endl;
     int transCount = 0;
     std::set<GameState> tested;
     int np, np1, np2, ne1, ne2;
@@ -49,18 +49,18 @@ bool check() {
         // outTuple(next.makeTuple());
         // テストケースの重複を検査
         if (tested.find(next) != tested.end()) {
-            std::cerr << "Testcase duplicate" << std::endl;
+            std::clog << "Testcase duplicate" << std::endl;
             return false;
         }
         // 遷移先の不足を検査
         tested.insert(next);
         if (nexts.find(next) == nexts.end()) {
-            std::cerr << "State transition lack" << std::endl;
+            std::clog << "State transition lack" << std::endl;
             return false;
         }
     }
     if (nexts.size() > transCount) {
-        std::cerr << "Illegal state transition" << std::endl;
+        std::clog << "Illegal state transition" << std::endl;
         return false;
     }
     return true;
@@ -72,14 +72,17 @@ int main(void) {
     int ok = 0;
 
     for (int i = 1; i <= n; i++) {
-        std::cerr << "[" << i << "]" << std::endl;
+        std::clog << "[" << i << "]" << std::endl;
         if (check()) {
-            std::cerr << "OK" << std::endl;
+            std::clog << "OK" << std::endl;
             ok++;
         } else {
-            std::cerr << "NG" << std::endl;
+            std::clog << "NG" << std::endl;
+            std::cout << "NG" << std::endl;
             return 0;
         }
     }
+
+    std::cout << "OK" << std::endl;
     return 0;
 }
