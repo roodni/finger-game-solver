@@ -8,6 +8,8 @@ test/*/log.txt
 
 # 実行時に生成されるもの
 bin/
+*.dot
+*.pdf
 
 # その他
 .vscode/
