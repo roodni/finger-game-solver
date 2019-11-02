@@ -5,15 +5,19 @@
 #include <sstream>
 
 namespace {
-    const int max = 4;  // 指の本数
+    const int max = 4;  // 指の最大本数
+    // 指の本数が最大を越えた時の処理
+    int overflow(int finger) {
+        return finger % (max + 1);  // modルール
+        // return finger <= max ? finger : 0;  // mod禁止ルール
+    }
 }
 
 GameState::GameState(int player, int p1, int p2, int e1, int e2) {
-    const int mod = max + 1;
-    p1 %= mod;
-    p2 %= mod;
-    e1 %= mod;
-    e2 %= mod;
+    p1 = overflow(p1);
+    p2 = overflow(p2);
+    e1 = overflow(e1);
+    e2 = overflow(e2);
 
     // l <= r となるようにする
     l[player] = std::min(p1, p2);
