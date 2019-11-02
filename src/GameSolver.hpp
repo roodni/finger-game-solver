@@ -22,6 +22,7 @@ public:
 private:
     GameState firstState;
     void calcWinTrans(int player);   // playerの勝利する状態遷移を計算する
+    bool isWinTransCalced[2];   // 勝利確定遷移が計算されているか
     std::map<GameState, Trans> transs;
-    std::set<GameState> winStates[2];   // 勝利状態の集合
+    std::set<GameState> winStates[2];   // 勝利確定状態の集合
 };
