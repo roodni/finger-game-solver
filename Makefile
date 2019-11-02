@@ -13,7 +13,8 @@ graphviz_flags = -Tpdf
 main_target = ./a.out
 main_src = ./src/main.cpp
 main_dep = ./obj/GameState.o ./obj/GraphVisualizer.o ./obj/GameSolver.o
-main_out = ./dot/all.dot
+main_dot = ./dot/all.dot
+main_pdf = ./dot/all.pdf
 all: $(main_target)
 
 $(main_target): $(main_src) $(main_dep)
@@ -21,7 +22,8 @@ $(main_target): $(main_src) $(main_dep)
 
 
 run: $(main_target)
-	$(main_target) > $(main_out)
+	$(main_target) > $(main_dot)
+	$(graphviz) $(graphviz_flags) -o $(main_pdf) $(main_dot)
 
 
 test: test_state_trans test_graphviz
