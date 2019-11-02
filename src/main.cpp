@@ -8,9 +8,8 @@ void unko(const std::string &str) {
 }
 
 int main() {
-    GameSolver gameSolver;
     std::cerr << "[init]" << std::endl;
-    gameSolver.init(GameState(0, 1, 1, 1, 1));
+    GameSolver gameSolver(GameState(0, 1, 1, 1, 1));
     std::cerr << "[graph]" << std::endl;
     gameSolver.getAllGameGraph(std::cout);
 

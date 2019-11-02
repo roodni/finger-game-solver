@@ -15,13 +15,13 @@ namespace {
 
 class GameSolver {
 public:
-    void init(const GameState &firstState);
+    GameSolver(const GameState &firstState);
     void getAllGameGraph(std::ostream &out);    // ゲームのグラフを全て描画する
     void getWinGameGraph(int player, std::ostream &out);    // playerの勝利するゲームグラフを描画する
     void getLoopGameGraph(std::ostream &out);   // 千日手となるゲームグラフを描画する
 private:
+    GameState firstState;
     void calcWinTrans(int player);   // playerの勝利する状態遷移を計算する
     std::map<GameState, Trans> transs;
-    std::set<GameState> loopStates; // 千日手となる状態の集合
     std::set<GameState> winStates[2];   // 勝利状態の集合
 };
