@@ -1,6 +1,7 @@
 #pragma once
 #include <set>
 #include <tuple>
+#include <string>
 
 // player
 // 0: 先攻
@@ -14,6 +15,7 @@ public:
     int getWinner() const;    // 勝利状態であれば勝者を返し、そうでなければ-1を返す
     void addTransSet(std::set<GameState> &set) const; // 遷移可能な状態の集合を求め、与えられた集合に加える
     std::tuple<int, int, int, int, int> makeTuple() const;    // 状態をコンストラクタと同じ順にタプルにする
+    std::string getLabel() const;  // ラベルを吐く
 private:
     int l[2], r[2]; // 指の本数
     int player;

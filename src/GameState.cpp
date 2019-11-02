@@ -2,6 +2,7 @@
 #include <cassert>
 #include <algorithm>
 #include <tuple>
+#include <sstream>
 
 namespace {
     const int max = 4;  // 指の本数
@@ -92,6 +93,15 @@ void GameState::addTransSet(std::set<GameState> &set) const {
 std::tuple<int, int, int, int, int> GameState::makeTuple() const {
     int enemy = 1 - player;
     return std::make_tuple(player, l[player], r[player], l[enemy], r[enemy]);
+}
+
+std::string GameState::getLabel() const {
+    std::string s;
+    std::stringstream out(s);
+    out << (player == 0 ? "first" : "second") << "\n"
+        << "f{" << l[0] << ", " << r[0] << "}\n"
+        << "s{" << l[1] << ", " << r[1] << "}";
+    return s;
 }
 
 bool operator <(const GameState &l, const GameState &r) {
