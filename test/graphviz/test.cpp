@@ -18,7 +18,9 @@ int main(int argc, char **argv) {
     graph.setNodeOption(a, "fontsize", "30");
     graph.setNodeOption(b, "shape", "ellipse");
     graph.setNodeOption(b, "style", "filled");
-    graph.setNodeOption(b, "fillcolor", "red");
+    graph.setNodeOption(b, "fillcolor", "mistyrose");
+    graph.setNodeOption(d, "style", "filled");
+    graph.setNodeOption(d, "fillcolor", "skyblue");
     graph.setAllNodesOption("shape", "box");
 
     graph.setTrans(a, b);
