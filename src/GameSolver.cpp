@@ -37,7 +37,7 @@ GameSolver::GameSolver(const GameState &firstState) : firstState(firstState) {
     }
 }
 
-void GameSolver::getAllGameGraph(std::ostream &out) {
+void GameSolver::makeAllGameGraph(std::ostream &out) {
     GraphVisualizer gv;
     std::map<GameState, int> ids;   // 状態とグラフのノードidを対応づける
 
@@ -121,7 +121,7 @@ void GameSolver::calcWinTrans(int player) {
     isWinTransCalced[player] = true;
 }
 
-void GameSolver::getWinGameGraph(int player, std::ostream &out) {
+void GameSolver::makeWinGameGraph(int player, std::ostream &out) {
     assert(player == 0 || player == 1);
     calcWinTrans(player);
 
@@ -143,6 +143,57 @@ void GameSolver::getWinGameGraph(int player, std::ostream &out) {
             int nextId = ids[next];
             gv.setTrans(stateId, nextId);
         }
+    }
+
+    gv.toDotLang(out);
+}
+
+void GameSolver::makeLoopGameGraph(std::ostream &out) {
+    calcWinTrans(0);
+    calcWinTrans(1);
+
+    GraphVisualizer gv;
+    std::set<GameState> isVisited;
+
+    // (状態, ノードID)をdequeに入れて探索する
+    int firstId = gv.createNode(firstState.getLabel());
+    std::deque<std::pair<GameState, int>> sq{std::make_pair(firstState, firstId)};
+    while (!sq.empty()) {
+        auto &pair = sq.front();
+        GameState state = pair.first;
+        int stateId = pair.second;
+        sq.pop_front();
+
+        // 勝利確定状態か調べる
+        int winner = -1;
+        if (winStates[0].find(state) != winStates[0].end()) {
+            winner = 0;
+        } else if (winStates[1].find(state) != winStates[1].end()) {
+            winner = 1;
+        }
+
+        if (winner != -1) {
+            // 勝利確定状態のとき
+            gv.setNodeOption(stateId, "style", "filled");
+            gv.setNodeOption(stateId, "fillcolor", fillcolor[winner]);
+        } else if (isVisited.find(state) != isVisited.end()) {
+            // 千日手状態かつ既出の状態であるとき
+            gv.setNodeOption(stateId, "color", dupe);
+        } else {
+            // 千日手状態かつ既出の状態でないとき
+            Trans &trans = transs[state];
+            std::array<std::set<GameState> *, 3> transSets{&trans.loop, &trans.win[0], &trans.win[1]};
+            for (const std::set <GameState> *transSet : transSets) {
+                for (const GameState &next : *transSet) {
+                    // 各状態遷移を探索する
+                    int nextId = gv.createNode(next.getLabel());
+                    gv.setTrans(stateId, nextId);
+                    sq.push_back(std::make_pair(next, nextId));
+                }
+            }
+        }
+
+        isVisited.insert(state);
     }
 
     gv.toDotLang(out);

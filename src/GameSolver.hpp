@@ -16,9 +16,9 @@ namespace {
 class GameSolver {
 public:
     GameSolver(const GameState &firstState);
-    void getAllGameGraph(std::ostream &out);    // ゲームのグラフを全て描画する
-    void getWinGameGraph(int player, std::ostream &out);    // playerの勝利するゲームグラフを描画する
-    void getLoopGameGraph(std::ostream &out);   // 千日手となるゲームグラフを描画する
+    void makeAllGameGraph(std::ostream &out);    // ゲームのグラフを全て描画する
+    void makeWinGameGraph(int player, std::ostream &out);    // playerの勝利するゲームグラフを描画する
+    void makeLoopGameGraph(std::ostream &out);   // 千日手となるゲームグラフを描画する
 private:
     GameState firstState;
     void calcWinTrans(int player);   // playerの勝利する状態遷移を計算する

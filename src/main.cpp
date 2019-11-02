@@ -17,19 +17,19 @@ int main() {
     std::cerr << "[first-win-graph]" << std::endl;
     fout.open("dot/first.dot");
     if (fout.fail()) return 1;
-    gameSolver.getWinGameGraph(0, fout);
+    gameSolver.makeWinGameGraph(0, fout);
     fout.close();
 
     std::cerr << "[second-win-graph]" << std::endl;
     fout.open("dot/second.dot");
     if (fout.fail()) return 1;
-    gameSolver.getWinGameGraph(1, fout);
+    gameSolver.makeWinGameGraph(1, fout);
     fout.close();
 
-    std::cerr << "[all-graph]" << std::endl;
-    fout.open("dot/all.dot");
+    // std::cerr << "[loop-graph]" << std::endl;
+    fout.open("dot/loop.dot");
     if (fout.fail()) return 1;
-    gameSolver.getAllGameGraph(fout);
+    gameSolver.makeLoopGameGraph(fout);
     fout.close();
 
     return 0;

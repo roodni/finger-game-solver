@@ -22,7 +22,7 @@ run: $(main_target)
 	$(main_target)
 	$(graphviz) $(graphviz_flags) -o ./graph/first.pdf ./dot/first.dot
 	$(graphviz) $(graphviz_flags) -o ./graph/second.pdf ./dot/second.dot
-	$(graphviz) $(graphviz_flags) -o ./graph/all.pdf ./dot/all.dot
+	$(graphviz) $(graphviz_flags) -o ./graph/loop.pdf ./dot/loop.dot
 
 
 test: test_state_trans test_graphviz
