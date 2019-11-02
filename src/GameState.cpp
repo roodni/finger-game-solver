@@ -96,12 +96,11 @@ std::tuple<int, int, int, int, int> GameState::makeTuple() const {
 }
 
 std::string GameState::getLabel() const {
-    std::string s;
-    std::stringstream out(s);
-    out << (player == 0 ? "first" : "second") << "\n"
-        << "f{" << l[0] << ", " << r[0] << "}\n"
+    std::stringstream out;
+    out << (player == 0 ? "first" : "second") << "\\n"
+        << "f{" << l[0] << ", " << r[0] << "}\\n"
         << "s{" << l[1] << ", " << r[1] << "}";
-    return s;
+    return out.str();
 }
 
 bool operator <(const GameState &l, const GameState &r) {
