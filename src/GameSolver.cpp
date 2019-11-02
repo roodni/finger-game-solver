@@ -12,11 +12,12 @@ void GameSolver::init(const GameState &firstState) {
     std::deque<GameState> bfsq{firstState};
     while (!bfsq.empty()) {
         GameState state = bfsq.front();
+        bfsq.pop_front();
         loopStates.insert(state);   // 暫定千日手状態とする
         state.addTransSet(transs[state].loop); // 暫定千日手遷移に全ての遷移を追加
         for (const GameState &next : transs[state].loop) {
             transs[next].from.insert(state);
-            if (loopStates.find(next) != loopStates.end()) {
+            if (loopStates.find(next) == loopStates.end()) {
                 // 初回なら探索する
                 bfsq.push_back(next);
             }
@@ -44,9 +45,15 @@ void GameSolver::getAllGameGraph(std::ostream &out) {
         std::array<const std::set<GameState> *, 3> transSets{&trans.loop, &trans.win[0], &trans.win[1]};
         for (const std::set<GameState> *transSet : transSets) {
             for (const GameState &next : *transSet) {
-                // 対応するノードがなければ作成
-                if (ids.find(next) == ids.end()) ids[next] = gv.createNode(next.getLabel()); 
-                int nextId = ids[next];
+                // 遷移先には新規ノードを作成する
+                int nextId = gv.createNode(next.getLabel());
+                if (ids.find(next) == ids.end()) {
+                    // 状態が初回であればノードidを登録
+                    ids[next] = nextId;
+                } else {
+                    // 状態が既出なら薄める
+                    gv.setNodeOption(nextId, "color", "gray");
+                }
                 gv.setTrans(stateId, nextId);
             }
         }
