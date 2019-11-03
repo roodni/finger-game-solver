@@ -12,29 +12,32 @@ p_2 p1_2 np2_2 ne1_2 ne2_2
 ...
 */
 
-void outTuple(std::tuple<int, int, int, int, int> tp) {
+void outState(const GameState &state) {
+    int p = state.getPlayer();
+    int e = 1 - p;
     std::clog
-        << std::get<0>(tp)
-        << std::get<1>(tp)
-        << std::get<2>(tp)
-        << std::get<3>(tp)
-        << std::get<4>(tp) << std::endl;
+        << p
+        << state.getL(p)
+        << state.getR(p)
+        << state.getL(e)
+        << state.getR(e) << std::endl;
 }
 
 bool check() {
     int p, p1, p2, e1, e2;
-    std::set<GameState> nexts;
 
     std::cin >> p >> p1 >> p2 >> e1 >> e2;
     GameState state(p, p1, p2, e1, e2);
     std::clog << "State: ";
-    outTuple(state.makeTuple());
+    outState(state);
 
     // 遷移先の列挙
-    state.addTransSet(nexts);
+    GameRule rule(4, RuleOverflow::mod, RuleBunshin::allow);
+    std::set<GameState> nexts;
+    rule.calcTransSet(state, nexts);
     std::clog << "[Trans]" << std::endl;
-    for (auto it = nexts.begin(); it != nexts.end(); it++) {
-        outTuple(it->makeTuple());
+    for (const GameState &next : nexts) {
+        outState(next);
     }
 
     // テストケースと遷移先が合致するか検査

@@ -22,12 +22,12 @@ namespace {
 
 class GameSolver {
 public:
-    GameSolver(const GameState &firstState);
+    GameSolver(GameRule rule);
     void makeAllGameGraph(std::ostream &out);    // ゲームのグラフを全て描画する
     void makeWinGameGraph(int player, std::ostream &out);    // playerの勝利するゲームグラフを描画する
     void makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode = noLoop);   // 千日手となるゲームグラフを描画する
 private:
-    GameState firstState;
+    GameRule rule;
     void calcWinTrans(int player);   // playerの勝利する状態遷移を計算する
     bool isWinTransCalced[2];   // 勝利確定遷移が計算されているか
     std::map<GameState, Trans> transs;

@@ -10,23 +10,23 @@ namespace {
     char const* const dupe = "gray";
 }
 
-GameSolver::GameSolver(const GameState &firstState) : firstState(firstState) {
+GameSolver::GameSolver(GameRule rule) : rule(rule) {
     isWinTransCalced[0] = false;
     isWinTransCalced[1] = false;
 
     // ゲームグラフの全探索
-    std::deque<GameState> bfsq{firstState};
+    std::deque<GameState> bfsq{rule.firstState()};
     while (!bfsq.empty()) {
         GameState state = bfsq.front();
         bfsq.pop_front();
 
         // 勝利状態を勝利確定状態の集合に入れる
-        int winner = state.getWinner();
+        int winner = rule.getWinner(state);
         if (winner == 0 || winner == 1) {
             winStates[winner].insert(state);
         }
 
-        state.addTransSet(transs[state].loop); // 暫定千日手遷移に全ての遷移を追加
+        rule.calcTransSet(state, transs[state].loop); // 暫定千日手遷移に全ての遷移を追加
         for (const GameState &next : transs[state].loop) {
             if (transs.find(next) == transs.end()) {
                 // 初回なら探索する
@@ -41,7 +41,8 @@ void GameSolver::makeAllGameGraph(std::ostream &out) {
     GraphVisualizer gv;
     std::map<GameState, int> ids;   // 状態とグラフのノードidを対応づける
 
-    ids[firstState] = gv.createNode(firstState.getLabel());
+    GameState firstState = rule.firstState();
+    ids[firstState] = gv.createNode(rule.getLabel(firstState));
 
     std::deque<GameState> sq{firstState};
     while (!sq.empty()) {
@@ -58,8 +59,8 @@ void GameSolver::makeAllGameGraph(std::ostream &out) {
         for (std::set<GameState> *transSet : transSets) {
             for (const GameState &next : *transSet) {
                 // 遷移先には新規ノード作成
-                int nextId = gv.createNode(next.getLabel());
-                int winner = next.getWinner();
+                int nextId = gv.createNode(rule.getLabel(next));
+                int winner = rule.getWinner(next);
 
                 if (ids.find(next) == ids.end()) {
                     // 状態が初回であればノードidを登録し探索
@@ -129,17 +130,17 @@ void GameSolver::makeWinGameGraph(int player, std::ostream &out) {
     std::map<GameState, int> ids;
 
     for (const GameState &state : winStates[player]) {
-        if (ids.find(state) == ids.end()) ids[state] = gv.createNode(state.getLabel());
+        if (ids.find(state) == ids.end()) ids[state] = gv.createNode(rule.getLabel(state));
         int stateId = ids[state];
 
-        if (state.getWinner() == player) {
+        if (rule.getWinner(state) == player) {
             // 勝利状態であれば色を付ける
             gv.setNodeOption(stateId, "style", "filled");
             gv.setNodeOption(stateId, "fillcolor", fillcolor[player]);
         }
 
         for (const GameState &next : transs[state].win[player]) {
-            if (ids.find(next) == ids.end()) ids[next] = gv.createNode(next.getLabel());
+            if (ids.find(next) == ids.end()) ids[next] = gv.createNode(rule.getLabel(next));
             int nextId = ids[next];
             gv.setTrans(stateId, nextId);
         }
@@ -155,7 +156,8 @@ void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode) {
     GraphVisualizer gv;
     std::map<GameState, int> ids;   // allowLoopのとき用いる
     std::set<GameState> isVisited;  // noLoopのとき用いる
-    int firstId = gv.createNode(firstState.getLabel());
+    GameState firstState = rule.firstState();
+    int firstId = gv.createNode(rule.getLabel(firstState));
     if (loopMode == allowLoop) ids[firstState] = firstId;
 
     // (状態, ノードID)をdequeに入れて探索する
@@ -188,7 +190,7 @@ void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode) {
                 // 新しい状態のとき
                 for (const GameState &next : transs[state].loop) {
                     // 千日手遷移について必ず新規ノードを作成し探索する
-                    int nextId = gv.createNode(next.getLabel());
+                    int nextId = gv.createNode(rule.getLabel(next));
                     gv.setTrans(stateId, nextId);
                     sq.push_back(std::make_pair(next, nextId));
                 }
@@ -200,7 +202,7 @@ void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode) {
                 int nextId;
                 if (ids.find(next) == ids.end()) {
                     // 状態が初回ならノードを作成し、探索する
-                    nextId = gv.createNode(next.getLabel());
+                    nextId = gv.createNode(rule.getLabel(next));
                     ids[next] = nextId;
                     sq.push_back(std::make_pair(next, nextId));
                 } else {

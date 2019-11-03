@@ -10,7 +10,7 @@ void unko(const std::string &str) {
 
 int main() {
     std::cerr << "[init]" << std::endl;
-    GameSolver gameSolver(GameState(0, 1, 1, 1, 1));
+    GameSolver gameSolver(GameRule(4, RuleOverflow::mod, RuleBunshin::allow));
 
     std::ofstream fout;
 
