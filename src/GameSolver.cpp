@@ -79,7 +79,7 @@ void GameSolver::makeAllGameGraph(std::ostream &out) {
                     gv.setNodeOption(nextId, "fillcolor", fillcolor[winner]);
                 }
 
-                gv.setTrans(stateId, nextId);
+                gv.createEdge(stateId, nextId);
             }
         }
     }
@@ -142,7 +142,8 @@ void GameSolver::makeWinGameGraph(int player, std::ostream &out) {
         for (const GameState &next : transs[state].win[player]) {
             if (ids.find(next) == ids.end()) ids[next] = gv.createNode(rule.getLabel(next));
             int nextId = ids[next];
-            gv.setTrans(stateId, nextId);
+            int edgeId = gv.createEdge(stateId, nextId);
+            gv.setEdgeOption(edgeId, "color", color[rule.getPlayer(state)]);
         }
     }
 
@@ -191,7 +192,8 @@ void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode) {
                 for (const GameState &next : transs[state].loop) {
                     // 千日手遷移について必ず新規ノードを作成し探索する
                     int nextId = gv.createNode(rule.getLabel(next));
-                    gv.setTrans(stateId, nextId);
+                    int edgeId = gv.createEdge(stateId, nextId);
+                    gv.setEdgeOption(edgeId, "color", color[rule.getPlayer(state)]);
                     sq.push_back(std::make_pair(next, nextId));
                 }
                 isVisited.insert(state);
@@ -209,7 +211,8 @@ void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode) {
                     // 状態が既出ならそれ以上探索しない
                     nextId = ids[next];
                 }
-                gv.setTrans(stateId, nextId);
+                int edgeId = gv.createEdge(stateId, nextId);
+                gv.setEdgeOption(edgeId, "color", color[rule.getPlayer(state)]);
             }
         }
     }

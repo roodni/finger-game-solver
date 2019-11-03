@@ -23,12 +23,14 @@ int main(int argc, char **argv) {
     graph.setNodeOption(d, "fillcolor", "skyblue");
     graph.setAllNodesOption("shape", "box");
 
-    graph.setTrans(a, b);
-    graph.setTrans(b, c);
-    graph.setTrans(c, d);
-    graph.setTrans(d, b);
-    graph.setTrans(b, e);
-    graph.setTrans(d, e);
+    graph.createEdge(a, b);
+    graph.createEdge(b, c);
+    graph.createEdge(c, d);
+    graph.createEdge(d, b);
+    graph.createEdge(b, e);
+    int e_de = graph.createEdge(d, e);
+
+    graph.setEdgeOption(e_de, "label", "test");
 
     std::ofstream out(argv[1]);
     graph.toDotLang(out);
