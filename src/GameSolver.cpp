@@ -148,15 +148,17 @@ void GameSolver::makeWinGameGraph(int player, std::ostream &out) {
     gv.toDotLang(out);
 }
 
-void GameSolver::makeLoopGameGraph(std::ostream &out) {
+void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode) {
     calcWinTrans(0);
     calcWinTrans(1);
 
     GraphVisualizer gv;
-    std::set<GameState> isVisited;
+    std::map<GameState, int> ids;   // allowLoopのとき用いる
+    std::set<GameState> isVisited;  // noLoopのとき用いる
+    int firstId = gv.createNode(firstState.getLabel());
+    if (loopMode == allowLoop) ids[firstState] = firstId;
 
     // (状態, ノードID)をdequeに入れて探索する
-    int firstId = gv.createNode(firstState.getLabel());
     std::deque<std::pair<GameState, int>> sq{std::make_pair(firstState, firstId)};
     while (!sq.empty()) {
         auto &pair = sq.front();
@@ -171,29 +173,43 @@ void GameSolver::makeLoopGameGraph(std::ostream &out) {
         } else if (winStates[1].find(state) != winStates[1].end()) {
             winner = 1;
         }
-
         if (winner != -1) {
             // 勝利確定状態のとき
+            // 色をつけ、それ以上探索しない
             gv.setNodeOption(stateId, "style", "filled");
             gv.setNodeOption(stateId, "fillcolor", fillcolor[winner]);
-        } else if (isVisited.find(state) != isVisited.end()) {
-            // 千日手状態かつ既出の状態であるとき
-            gv.setNodeOption(stateId, "color", dupe);
-        } else {
-            // 千日手状態かつ既出の状態でないとき
-            Trans &trans = transs[state];
-            std::array<std::set<GameState> *, 3> transSets{&trans.loop, &trans.win[0], &trans.win[1]};
-            for (const std::set <GameState> *transSet : transSets) {
-                for (const GameState &next : *transSet) {
-                    // 各状態遷移を探索する
+        } else if (loopMode == noLoop) {
+            // 千日手状態で、noLoopモードのとき
+            if (isVisited.find(state) != isVisited.end()) {
+                // 既出の状態のとき
+                // 色を変えてそれ以上探索しない
+                gv.setNodeOption(stateId, "color", dupe);
+            } else {
+                // 新しい状態のとき
+                for (const GameState &next : transs[state].loop) {
+                    // 千日手遷移について必ず新規ノードを作成し探索する
                     int nextId = gv.createNode(next.getLabel());
                     gv.setTrans(stateId, nextId);
                     sq.push_back(std::make_pair(next, nextId));
                 }
+                isVisited.insert(state);
+            }
+        } else if (loopMode == allowLoop) {
+            // 千日手状態で、allowLoopモードのとき
+            for (const GameState &next : transs[state].loop) {
+                int nextId;
+                if (ids.find(next) == ids.end()) {
+                    // 状態が初回ならノードを作成し、探索する
+                    nextId = gv.createNode(next.getLabel());
+                    ids[next] = nextId;
+                    sq.push_back(std::make_pair(next, nextId));
+                } else {
+                    // 状態が既出ならそれ以上探索しない
+                    nextId = ids[next];
+                }
+                gv.setTrans(stateId, nextId);
             }
         }
-
-        isVisited.insert(state);
     }
 
     gv.toDotLang(out);

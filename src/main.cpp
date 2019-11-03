@@ -26,10 +26,10 @@ int main() {
     gameSolver.makeWinGameGraph(1, fout);
     fout.close();
 
-    // std::cerr << "[loop-graph]" << std::endl;
+    std::cerr << "[loop-graph]" << std::endl;
     fout.open("dot/loop.dot");
     if (fout.fail()) return 1;
-    gameSolver.makeLoopGameGraph(fout);
+    gameSolver.makeLoopGameGraph(fout, noLoop);
     fout.close();
 
     return 0;

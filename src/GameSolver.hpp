@@ -4,6 +4,13 @@
 #include <set>
 #include <ostream>
 
+
+enum GraphLoopMode {
+    noLoop, // ループを作らない
+    allowLoop   // ループを許可する
+};
+
+
 namespace {
     // 各状態からの遷移を分類して格納するデータ構造
     struct Trans {
@@ -18,7 +25,7 @@ public:
     GameSolver(const GameState &firstState);
     void makeAllGameGraph(std::ostream &out);    // ゲームのグラフを全て描画する
     void makeWinGameGraph(int player, std::ostream &out);    // playerの勝利するゲームグラフを描画する
-    void makeLoopGameGraph(std::ostream &out);   // 千日手となるゲームグラフを描画する
+    void makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode = noLoop);   // 千日手となるゲームグラフを描画する
 private:
     GameState firstState;
     void calcWinTrans(int player);   // playerの勝利する状態遷移を計算する
