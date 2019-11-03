@@ -23,7 +23,6 @@ namespace {
 class GameSolver {
 public:
     GameSolver(GameRule rule);
-    void makeAllGameGraph(std::ostream &out);    // ゲームのグラフを全て描画する
     void makeWinGameGraph(int player, std::ostream &out);    // playerの勝利するゲームグラフを描画する
     void makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode = noLoop);   // 千日手となるゲームグラフを描画する
 private:

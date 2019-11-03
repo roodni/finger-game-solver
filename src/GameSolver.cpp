@@ -37,56 +37,6 @@ GameSolver::GameSolver(GameRule rule) : rule(rule) {
     }
 }
 
-void GameSolver::makeAllGameGraph(std::ostream &out) {
-    GraphVisualizer gv;
-    std::map<GameState, int> ids;   // 状態とグラフのノードidを対応づける
-
-    GameState firstState = rule.firstState();
-    ids[firstState] = gv.createNode(rule.getLabel(firstState));
-
-    std::deque<GameState> sq{firstState};
-    while (!sq.empty()) {
-        // 深さ優先探索
-        GameState state = sq.back();
-        sq.pop_back();
-
-        Trans &trans = transs[state]; // 状態遷移の取得
-        int stateId = ids[state];   // ノードidの取得
-
-        // 各遷移を見る
-        // std::fprintf(stderr, "%d %d %d\n", trans.loop.size(), trans.win[0].size(), trans.win[1].size());
-        std::array<std::set<GameState> *, 3> transSets{&trans.loop, &trans.win[0], &trans.win[1]};
-        for (std::set<GameState> *transSet : transSets) {
-            for (const GameState &next : *transSet) {
-                // 遷移先には新規ノード作成
-                int nextId = gv.createNode(rule.getLabel(next));
-                int winner = rule.getWinner(next);
-
-                if (ids.find(next) == ids.end()) {
-                    // 状態が初回であればノードidを登録し探索
-                    ids[next] = nextId;
-                    sq.push_back(next);
-                } else {
-                    // 状態が既出かつ
-                    if (winner != 0 && winner != 1) {
-                        // 勝利状態でなければ色を薄くする
-                        gv.setNodeOption(nextId, "color", dupe);
-                    }
-                }
-                if (winner == 0 || winner == 1) {
-                    // 勝利状態であれば色をつける
-                    gv.setNodeOption(nextId, "style", "filled");
-                    gv.setNodeOption(nextId, "fillcolor", fillcolor[winner]);
-                }
-
-                gv.createEdge(stateId, nextId);
-            }
-        }
-    }
-
-    gv.toDotLang(out);
-}
-
 void GameSolver::calcWinTrans(int player) {
     assert(player == 0 || player == 1);
     if (isWinTransCalced[player]) {
