@@ -32,7 +32,7 @@ bool check() {
     outState(state);
 
     // 遷移先の列挙
-    GameRule rule(4, RuleOverflow::mod, RuleBunshin::allow);
+    GameRule rule(4, RuleOverflow::mod, RuleBunshin::allow, RuleAtackSelf::allow);
     std::set<GameState> nexts;
     rule.calcTransSet(state, nexts);
     std::clog << "[Trans]" << std::endl;
