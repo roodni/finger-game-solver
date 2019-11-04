@@ -3,7 +3,7 @@
 
 // case.txtの形式
 /*
-max overflow bunshin atackself  <- ルール
+max overflow bunshin attackself  <- ルール
 p l0 r0 l1 r1   <- 状態
 p_ l0_1 r0_1 l1_1 r1_1  <- 遷移先の状態を列挙
 p_ l0_2 r0_2 l1_2 r1_2
@@ -24,7 +24,7 @@ void outState(const GameState &state) {
 bool check(int max) {
     RuleOverflow overflow;
     RuleBunshin bunshin;
-    RuleAtackSelf atackSelf;
+    RuleAttackSelf attackSelf;
 
     // ルールの読み込み
     std::string str;
@@ -50,11 +50,11 @@ bool check(int max) {
     }
     std::cin >> str;
     if (str == "allow") {
-        atackSelf = RuleAtackSelf::allow;
+        attackSelf = RuleAttackSelf::allow;
     } else if (str == "forbid") {
-        atackSelf = RuleAtackSelf::forbid;
+        attackSelf = RuleAttackSelf::forbid;
     } else {
-        std::clog << "invalid atackSelfRule" << std::endl;
+        std::clog << "invalid attackSelfRule" << std::endl;
         return false;
     }
 
@@ -69,7 +69,7 @@ bool check(int max) {
     outState(state);
 
     // 遷移先の列挙
-    GameRule rule(max, overflow, bunshin, atackSelf);
+    GameRule rule(max, overflow, bunshin, attackSelf);
     std::set<GameState> nexts;
     rule.calcTransSet(state, nexts);
     std::clog << "[Trans]" << std::endl;
