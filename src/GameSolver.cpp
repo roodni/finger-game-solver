@@ -58,7 +58,7 @@ void GameSolver::calcWinTrans(int player) {
             transs[prev].win[player].insert(state);
             if (pWinStates.find(prev) == pWinStates.end()) {
                 // 遷移元がまだ勝利確定状態でないとき
-                if (prev.getPlayer() == player || (transs[prev].loop.empty() && transs[prev].win[enemy].empty())) {
+                if (rule.getPlayer(prev) == player || (transs[prev].loop.empty() && transs[prev].win[enemy].empty())) {
                     // prevからstateに自分の手番で移行できる、または相手が移行せざるをえないとき
                     // 勝利確定状態に加え、探索する
                     pWinStates.insert(prev);
