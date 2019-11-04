@@ -29,7 +29,7 @@ int main() {
     std::cerr << "[loop-graph]" << std::endl;
     fout.open("dot/loop.dot");
     if (fout.fail()) return 1;
-    gameSolver.makeLoopGameGraph(fout, noLoop);
+    gameSolver.makeLoopGameGraph(fout, GraphLoop::forbid);
     fout.close();
 
     return 0;

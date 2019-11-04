@@ -100,16 +100,16 @@ void GameSolver::makeWinGameGraph(int player, std::ostream &out) {
     gv.toDotLang(out);
 }
 
-void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode) {
+void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoop loopMode) {
     calcWinTrans(0);
     calcWinTrans(1);
 
     GraphVisualizer gv;
-    std::map<GameState, int> ids;   // allowLoopのとき用いる
-    std::set<GameState> isVisited;  // noLoopのとき用いる
+    std::map<GameState, int> ids;   // ループがallowのとき用いる
+    std::set<GameState> isVisited;  // ループがforbidのとき用いる
     GameState firstState = rule.firstState();
     int firstId = gv.createNode(rule.getLabel(firstState));
-    if (loopMode == allowLoop) ids[firstState] = firstId;
+    if (loopMode == GraphLoop::allow) ids[firstState] = firstId;
 
     // (状態, ノードID)をdequeに入れて探索する
     std::deque<std::pair<GameState, int>> sq{std::make_pair(firstState, firstId)};
@@ -131,8 +131,8 @@ void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode) {
             // 色をつけ、それ以上探索しない
             gv.setNodeOption(stateId, "style", "filled");
             gv.setNodeOption(stateId, "fillcolor", fillcolor[winner]);
-        } else if (loopMode == noLoop) {
-            // 千日手状態で、noLoopモードのとき
+        } else if (loopMode == GraphLoop::forbid) {
+            // 千日手状態で、ループなしのとき
             if (isVisited.find(state) != isVisited.end()) {
                 // 既出の状態のとき
                 // 色を変えてそれ以上探索しない
@@ -148,8 +148,8 @@ void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode) {
                 }
                 isVisited.insert(state);
             }
-        } else if (loopMode == allowLoop) {
-            // 千日手状態で、allowLoopモードのとき
+        } else if (loopMode == GraphLoop::allow) {
+            // 千日手状態で、ループありのとき
             for (const GameState &next : transs[state].loop) {
                 int nextId;
                 if (ids.find(next) == ids.end()) {

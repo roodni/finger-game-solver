@@ -5,9 +5,9 @@
 #include <ostream>
 
 
-enum GraphLoopMode {
-    noLoop, // ループを作らない
-    allowLoop   // ループを許可する
+enum class GraphLoop {
+    forbid, // ループを作らない
+    allow   // ループを許可する
 };
 
 
@@ -24,7 +24,7 @@ class GameSolver {
 public:
     GameSolver(GameRule rule);
     void makeWinGameGraph(int player, std::ostream &out);    // playerの勝利するゲームグラフを描画する
-    void makeLoopGameGraph(std::ostream &out, GraphLoopMode loopMode = noLoop);   // 千日手となるゲームグラフを描画する
+    void makeLoopGameGraph(std::ostream &out, GraphLoop loopMode = GraphLoop::forbid);   // 千日手となるゲームグラフを描画する
 private:
     GameRule rule;
     void calcWinTrans(int player);   // playerの勝利する状態遷移を計算する
