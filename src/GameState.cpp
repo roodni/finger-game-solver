@@ -38,10 +38,11 @@ bool operator <(const GameState &l, const GameState &r) {
 
 
 
-GameRule::GameRule(int max, RuleOverflow overflow, RuleBunshin bunshin) {
+GameRule::GameRule(int max, RuleOverflow overflow, RuleBunshin bunshin, RuleAtackSelf atackSelf) {
     this->max = max;
     this->overflow = overflow;
     this->bunshin = bunshin;
+    this->atackSelf = atackSelf;
 }
 
 int GameRule::getPlayer(const GameState &state) const {
@@ -75,7 +76,7 @@ void GameRule::calcTransSet(const GameState &state, std::set<GameState> &set) co
             set.insert(GameState(enemy, el, ofAct(er + pl), pl, pr));
         }
         // 自分右を攻撃
-        if (pr != 0) {
+        if (atackSelf == RuleAtackSelf::allow && pr != 0) {
             set.insert(GameState(enemy, el, er, pl, ofAct(pr + pl)));
         }
     }
@@ -90,7 +91,7 @@ void GameRule::calcTransSet(const GameState &state, std::set<GameState> &set) co
             set.insert(GameState(enemy, el, ofAct(er + pr), pl, pr));
         }
         // 自分左を攻撃
-        if (pl != 0) {
+        if (atackSelf == RuleAtackSelf::allow && pl != 0) {
             set.insert(GameState(enemy, el, er, ofAct(pl + pr), pr));
         }
     }

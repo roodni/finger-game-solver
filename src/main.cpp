@@ -10,7 +10,7 @@ void unko(const std::string &str) {
 
 int main() {
     std::cerr << "[init]" << std::endl;
-    GameSolver gameSolver(GameRule(4, RuleOverflow::mod, RuleBunshin::allow));
+    GameSolver gameSolver(GameRule(4, RuleOverflow::mod, RuleBunshin::allow, RuleAtackSelf::allow));
 
     std::ofstream fout;
 
@@ -29,7 +29,7 @@ int main() {
     std::cerr << "[loop-graph]" << std::endl;
     fout.open("dot/loop.dot");
     if (fout.fail()) return 1;
-    gameSolver.makeLoopGameGraph(fout, GraphLoop::forbid);
+    gameSolver.makeLoopGameGraph(fout, GraphLoop::forbid, GraphShowLose::show);
     fout.close();
 
     return 0;

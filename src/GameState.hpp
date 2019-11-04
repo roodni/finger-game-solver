@@ -22,6 +22,11 @@ private:
 
 bool operator <(const GameState &l, const GameState &r);
 
+// 自分を攻撃できるルール
+enum class RuleAtackSelf {
+    allow,  // 自分を攻撃できる
+    forbid  // 自分を攻撃できない
+};
 
 // オーバーフロー時のルール
 enum class RuleOverflow {
@@ -39,7 +44,7 @@ enum class RuleBunshin {
 // ゲームのルールを持つ
 class GameRule {
 public:
-    GameRule(int max, RuleOverflow overflow, RuleBunshin bunshin);
+    GameRule(int max, RuleOverflow overflow, RuleBunshin bunshin, RuleAtackSelf atackSelf);
     int getPlayer(const GameState &state) const;    // その状態を操作可能なプレイヤーを返す
     int getWinner(const GameState &state) const;    // 勝利状態であれば勝者を返し、そうでなければ-1を返す
     void calcTransSet(const GameState &state, std::set<GameState> &set) const;    // 遷移可能な状態の集合を求め、与えられた集合に加える
@@ -49,5 +54,6 @@ private:
     int max;    // 指の最大本数
     RuleOverflow overflow;
     RuleBunshin bunshin;
+    RuleAtackSelf atackSelf;
     int ofAct(int finger) const;  // 指本数オーバーフローを丸める
 };
