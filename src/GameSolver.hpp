@@ -4,12 +4,17 @@
 #include <set>
 #include <ostream>
 
-
+// 千日手描画のときに、グラフをループさせるか
 enum class GraphLoop {
     forbid, // ループを作らない
     allow   // ループを許可する
 };
 
+// 千日手描画のときに、負け確定遷移を描画するか
+enum class GraphShowLose {
+    show,   // 描画する
+    hide    // 描画しない
+};
 
 namespace {
     // 各状態からの遷移を分類して格納するデータ構造
@@ -24,7 +29,7 @@ class GameSolver {
 public:
     GameSolver(GameRule rule);
     void makeWinGameGraph(int player, std::ostream &out);    // playerの勝利するゲームグラフを描画する
-    void makeLoopGameGraph(std::ostream &out, GraphLoop loopMode = GraphLoop::forbid);   // 千日手となるゲームグラフを描画する
+    void makeLoopGameGraph(std::ostream &out, GraphLoop loopMode, GraphShowLose showLose);   // 千日手となるゲームグラフを描画する
 private:
     GameRule rule;
     void calcWinTrans(int player);   // playerの勝利する状態遷移を計算する

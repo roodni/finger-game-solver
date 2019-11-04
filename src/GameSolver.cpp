@@ -1,7 +1,7 @@
 #include "GameSolver.hpp"
 #include "GraphVisualizer.hpp"
 #include <deque>
-#include <array>
+#include <vector>
 #include <cassert>
 
 namespace {
@@ -100,7 +100,7 @@ void GameSolver::makeWinGameGraph(int player, std::ostream &out) {
     gv.toDotLang(out);
 }
 
-void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoop loopMode) {
+void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoop loopMode, GraphShowLose showLose) {
     calcWinTrans(0);
     calcWinTrans(1);
 
@@ -139,30 +139,44 @@ void GameSolver::makeLoopGameGraph(std::ostream &out, GraphLoop loopMode) {
                 gv.setNodeOption(stateId, "color", dupe);
             } else {
                 // 新しい状態のとき
-                for (const GameState &next : transs[state].loop) {
-                    // 千日手遷移について必ず新規ノードを作成し探索する
-                    int nextId = gv.createNode(rule.getLabel(next));
-                    int edgeId = gv.createEdge(stateId, nextId);
-                    gv.setEdgeOption(edgeId, "color", color[rule.getPlayer(state)]);
-                    sq.push_back(std::make_pair(next, nextId));
+                std::vector<std::set<GameState> *> transSets{&transs[state].loop};
+                if (showLose == GraphShowLose::show) {
+                    transSets.push_back(&transs[state].win[0]);
+                    transSets.push_back(&transs[state].win[1]);
+                }
+                for (const std::set<GameState> *transSet : transSets) {
+                    for (const GameState &next : *transSet) {
+                        // 千日手遷移について必ず新規ノードを作成し探索する
+                        int nextId = gv.createNode(rule.getLabel(next));
+                        int edgeId = gv.createEdge(stateId, nextId);
+                        gv.setEdgeOption(edgeId, "color", color[rule.getPlayer(state)]);
+                        sq.push_back(std::make_pair(next, nextId));
+                    }
                 }
                 isVisited.insert(state);
             }
         } else if (loopMode == GraphLoop::allow) {
             // 千日手状態で、ループありのとき
-            for (const GameState &next : transs[state].loop) {
-                int nextId;
-                if (ids.find(next) == ids.end()) {
-                    // 状態が初回ならノードを作成し、探索する
-                    nextId = gv.createNode(rule.getLabel(next));
-                    ids[next] = nextId;
-                    sq.push_back(std::make_pair(next, nextId));
-                } else {
-                    // 状態が既出ならそれ以上探索しない
-                    nextId = ids[next];
+            std::vector<std::set<GameState> *> transSets{&transs[state].loop};
+            if (showLose == GraphShowLose::show) {
+                transSets.push_back(&transs[state].win[0]);
+                transSets.push_back(&transs[state].win[1]);
+            }
+            for (const std::set<GameState> *transSet : transSets) {
+                for (const GameState &next : *transSet) {
+                    int nextId;
+                    if (ids.find(next) == ids.end()) {
+                        // 状態が初回ならノードを作成し、探索する
+                        nextId = gv.createNode(rule.getLabel(next));
+                        ids[next] = nextId;
+                        sq.push_back(std::make_pair(next, nextId));
+                    } else {
+                        // 状態が既出ならそれ以上探索しない
+                        nextId = ids[next];
+                    }
+                    int edgeId = gv.createEdge(stateId, nextId);
+                    gv.setEdgeOption(edgeId, "color", color[rule.getPlayer(state)]);
                 }
-                int edgeId = gv.createEdge(stateId, nextId);
-                gv.setEdgeOption(edgeId, "color", color[rule.getPlayer(state)]);
             }
         }
     }
