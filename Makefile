@@ -6,6 +6,7 @@ graphviz_flags = -Tpdf
 
 .PHONY: all
 .PHONY: run
+.PHONY: clean
 .PHONY: test
 .PHONY: test_state_trans
 .PHONY: test_graphviz
@@ -20,9 +21,11 @@ $(main_target): $(main_src) $(main_dep)
 
 run: $(main_target)
 	$(main_target)
-	$(graphviz) $(graphviz_flags) -o ./graph/first.pdf ./dot/first.dot
-	$(graphviz) $(graphviz_flags) -o ./graph/second.pdf ./dot/second.dot
-	$(graphviz) $(graphviz_flags) -o ./graph/loop.pdf ./dot/loop.dot
+
+clean:
+	find ./obj/ -type f -name "*.o" -delete
+	find ./dot/ -type f -name "*.dot" -delete
+	find ./graph/ -type f -name "*.pdf" -delete
 
 
 test: test_state_trans test_graphviz
