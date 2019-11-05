@@ -20,12 +20,16 @@ $(main_target): $(main_src) $(main_dep)
 	$(cxx) $(cxxflags) $< $(main_dep) -o $@
 
 run: $(main_target)
-	$(main_target)
+	@$(main_target) | while read line; do \
+	  echo $$line; \
+	  $(graphviz) $(graphviz_flags) $$line -o `echo $$line | sed -e 's/^.*\///' -e 's/\(..*\)\..*$$/\1/' -e 's/\(.*\)/graph\/\1\.pdf/'`; \
+	done
 
 clean:
 	find ./obj/ -type f -name "*.o" -delete
-	find ./dot/ -type f -name "*.dot" -delete
-	find ./graph/ -type f -name "*.pdf" -delete
+	-rm ./a.out
+	-rm ./test/graphviz/test.out
+	-rm ./test/state_trans/test.out ./test/state_trans/log.txt
 
 
 test: test_state_trans test_graphviz
