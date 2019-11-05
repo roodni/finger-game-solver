@@ -39,6 +39,7 @@ bool operator <(const GameState &l, const GameState &r) {
 
 
 GameRule::GameRule(int max, RuleOverflow overflow, RuleBunshin bunshin, RuleAttackSelf attackSelf) {
+    assert(max >= 1);
     this->max = max;
     this->overflow = overflow;
     this->bunshin = bunshin;
